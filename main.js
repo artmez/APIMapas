@@ -37,7 +37,7 @@ window.addEventListener('DOMContentLoaded', () => {
       miSelect.innerHTML += option(element);
     });
     miSelect.addEventListener("change", (e) => {
-      e.preventDefault();
+      /* e.preventDefault(); */
       miSelect2.innerHTML = "";
       miSelect2.innerHTML = "<option disabled selected>Selecciona un País</option>";
       const filteredCountries = filter(regiones, (data) => data.region === e.target.value);
@@ -60,7 +60,7 @@ window.addEventListener('DOMContentLoaded', () => {
 })
 
 miSelect2.addEventListener("change", (e) => {
-  e.preventDefault();
+  /* e.preventDefault(); */
   const pais = e.target.value;
   fetchData(endPointSelected(pais))
   .then((data) => {
@@ -69,6 +69,7 @@ miSelect2.addEventListener("change", (e) => {
       let stringBordersComplete =[];
       let currencyName = "";
       let currencySymbol = "";
+      let stringLanguages = [];
       if(borders) {
         stringBorders = Object.values(borders);
         forEach(codigoPaises, (element) => {
@@ -76,8 +77,9 @@ miSelect2.addEventListener("change", (e) => {
             if(e === element.code) {
               stringBordersComplete.push(element.name);
             }
-          })
-        })
+          });
+        });
+        stringBordersComplete = stringBordersComplete.join(', ');
       } else {
         stringBordersComplete = 'No borders';
       }
@@ -88,17 +90,25 @@ miSelect2.addEventListener("change", (e) => {
         currencyName = 'No currencies';
         currencySymbol = 'No symbol';
       }
+      if(languages) {
+        forEach(languages, (e) => {
+          stringLanguages.push(e);
+        });
+        stringLanguages = stringLanguages.join(', ');
+      } else {
+        stringLanguages = 'No languages';
+      }
       const urlMap = endPointCoordinates(latlng[1], latlng[0]);
     return `<article class= "col-4">
       <div class="card mb-3" style="max-width: 540px;">
         <div class="row g-0">
          <div class="col-md-4 px-2 align-self-center">
-          <img src="${flags.png}" class="img-fluid rounded-start" alt="${name.common} flag.">
+          <img src="${flags.png}" class="img-fluid rounded-start border border-dark-subtle" alt="${name.common} flag.">
          </div>
          <div class="col-md-8">
           <div class="card-body">
            <h3 class="card-title text-center">${name.common}</h3>
-           <p class="card-text">Localized in the ${region} region, ${name.common} is a country with a population of ${population.toLocaleString()} inhabitants. The capital city is ${capital}. The main spoken language is ${Object.entries(languages)[0][1]}. The currency is the ${currencyName}, with the symbol of ${currencySymbol}. This country has an area of ${area.toLocaleString()} km2.</p>
+           <p class="card-text">Localized in the ${region} region, ${name.common} is a country with a population of ${population.toLocaleString()} inhabitants. The capital city is ${capital}. The main spoken language(s) is/are ${stringLanguages}. The currency is the ${currencyName}, with the symbol of ${currencySymbol}. This country has an area of ${area.toLocaleString()} km2.</p>
            <p class="card-text"><small class="text-body-secondary">${name.common} has the following country borders: ${stringBordersComplete}.</small></p>
           </div>
         </div>
@@ -108,7 +118,7 @@ miSelect2.addEventListener("change", (e) => {
     <article class= "col-4">
       <div class="card mb-3" style="max-width: 540px;">
         <div class="card-body">
-            <h3 class="card-title text-center">Map</h3>
+            <h3 class="card-title text-center">${name.common} in the World</h3>
         </div>
         <img src="${urlMap}">
      </div>
